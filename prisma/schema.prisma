@@ -1,0 +1,101 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+
+  schemas = ["public", "billing", "videos"]
+}
+
+model User {
+  id   BigInt @id // Telegram userId 
+  name String
+
+  chatId   BigInt @default(0)
+  language String @default("ru")
+
+  usage         Usage[]
+  invoices      Invoice[]
+  subscriptions Subscription[]
+
+  createdAt DateTime @default(now())
+
+  @@map("users")
+  @@schema("public")
+}
+
+// Video models
+model BackdropVideos {
+  id String @id @default(uuid()) @db.Uuid
+
+  videoUrl String
+  duration BigInt
+
+  category String @default("Random")
+
+  createdAt DateTime @default(now())
+
+  @@map("backdrop_videos")
+  @@schema("videos")
+}
+
+// Billing models
+model Usage {
+  service String
+  count   Int      @default(0)
+  day     DateTime @default(now())
+
+  subscriberId BigInt
+  Subscriber   User   @relation(fields: [subscriberId], references: [id])
+
+  @@id([subscriberId, day, service])
+  @@map("usages")
+  @@schema("billing")
+}
+
+model Subscription {
+  id String @id @default(uuid()) @db.Uuid
+
+  service  String?
+  endsAt   DateTime
+  startsAt DateTime @default(now())
+
+  subscriberId BigInt
+  Subscriber   User   @relation(fields: [subscriberId], references: [id])
+
+  @@map("subscriptions")
+  @@schema("billing")
+}
+
+enum InvoiceStatus {
+  Paid
+  Pending
+  Canceled
+
+  @@schema("billing")
+}
+
+model Invoice {
+  id String @id @default(uuid()) @db.Uuid
+
+  status InvoiceStatus @default(Pending)
+
+  payload Json
+  service String
+
+  amount Int
+
+  description String?
+
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  subscriberId BigInt
+  Subscriber   User   @relation(fields: [subscriberId], references: [id])
+
+  @@map("invoices")
+  @@schema("billing")
+}
