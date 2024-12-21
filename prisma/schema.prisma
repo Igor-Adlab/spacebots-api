@@ -19,6 +19,7 @@ model User {
 
   usage         Usage[]
   invoices      Invoice[]
+  history       UsageHistory[]
   subscriptions Subscription[]
 
   createdAt DateTime @default(now())
@@ -97,5 +98,20 @@ model Invoice {
   Subscriber   User   @relation(fields: [subscriberId], references: [id])
 
   @@map("invoices")
+  @@schema("billing")
+}
+
+model UsageHistory {
+  id String @id @default(uuid()) @db.Uuid
+
+  payload Json
+  service String
+
+  createdAt DateTime  @default(now())
+
+  subscriberId BigInt
+  Subscriber   User   @relation(fields: [subscriberId], references: [id])
+
+  @@map("usage_history")
   @@schema("billing")
 }

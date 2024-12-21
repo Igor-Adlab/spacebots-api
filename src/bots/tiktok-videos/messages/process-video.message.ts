@@ -42,7 +42,7 @@ export async function processVideoMessage(ctx: ITikTokVideosBotContext) {
     }
 
     ctx.session.editor = null;
-    await ctx.diContainerScope.resolve('usage').increase();
+    await ctx.diContainerScope.resolve('usage').track({ request });
   } catch (err) {
     ctx.log.info(`Job invocation error: ${JSON.stringify({ request, err })}`);
   }

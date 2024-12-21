@@ -43,7 +43,7 @@ export function searchRoute(bot: Bot<IMusicSearchBotContext>) {
       );
 
       ctx.session.menuMessageId = msg.message_id;
-      await ctx.diContainerScope.resolve('usage').increase();
+      await ctx.diContainerScope.resolve('usage').track({ query: text });
     }
   );
 }

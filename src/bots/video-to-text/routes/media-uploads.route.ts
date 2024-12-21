@@ -23,7 +23,7 @@ export function mediaUploadsRoute(bot: Bot<IVideoToTextBotContext>) {
 
         return message
           .editText(text)
-          .then(() => ctx.diContainerScope.resolve('usage').increase());
+          .then(() => ctx.diContainerScope.resolve('usage').track({ type: 'audio', url: file.getUrl() }));
       } catch (err) {
         return ctx.t('vtt_error_processing');
       }
@@ -54,7 +54,7 @@ export function mediaUploadsRoute(bot: Bot<IVideoToTextBotContext>) {
 
         return message
           .editText(text)
-          .then(() => ctx.diContainerScope.resolve('usage').increase());
+          .then(() => ctx.diContainerScope.resolve('usage').track({ type: 'video', url: file.getUrl() }));
       } catch (err) {
         return ctx.t('vtt_error_processing');
       }

@@ -24,7 +24,8 @@ export function urlRoute(bot: Bot<IDownloaderBotContext>) {
         return ctx.reply(ctx.t('downloader_incorrect_social_link'));
       }
 
-      await ctx.diContainerScope.resolve('usage').increase();
+
+      await ctx.diContainerScope.resolve('usage').track({ url });
       return linkInfoMessage(ctx, info);
     }
   );

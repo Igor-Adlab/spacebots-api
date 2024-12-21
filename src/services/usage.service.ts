@@ -16,6 +16,13 @@ export class UsageService {
     this.logger = logger.child({ service: UsageService.name });
   }
 
+  async track(payload: Record<string, any>) {
+    await this.increase();
+    await this.prisma.usageHistory.create({
+      data: { payload, service: this.serviceId, subscriberId: this.user.id }
+    });
+  }
+
   increase(date?: Date) {
     let day = DateTimeUtils.getDayStart(date).toDate();
     this.logger.info(
